@@ -12,6 +12,7 @@ export const settingsResult = z.object({
   phone: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
+  paymentInstructions: z.string().optional().nullable(),
   addr1: z.string().optional().nullable(),
   addr2: z.string().optional().nullable(),
   suburb: z.string().optional().nullable(),
