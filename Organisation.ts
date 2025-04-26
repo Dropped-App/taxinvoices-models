@@ -10,6 +10,7 @@ export const settingsResult = z.object({
   gstNumber: z.string().optional().nullable(),
   email: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
+  name: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
   paymentInstructions: z.string().optional().nullable(),
