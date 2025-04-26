@@ -1,6 +1,28 @@
 import { ObjectId } from 'bson';
 import { z } from "zod";
 
+export const templateTypes = z.union([
+  z.literal("NZ-GST"),
+  z.literal("AU-GST"),
+]).optional().nullable();
+
+export const settingsResult = z.object({
+  gstNumber: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  website: z.string().optional().nullable(),
+  note: z.string().optional().nullable(),
+  addr1: z.string().optional().nullable(),
+  addr2: z.string().optional().nullable(),
+  suburb: z.string().optional().nullable(),
+  province: z.string().optional().nullable(),
+  zip: z.string().optional().nullable(),
+  country: z.string().optional().nullable(),
+  templateType: templateTypes,
+}).optional().nullable();
+
+export type Settings = z.infer<typeof settingsResult>;
+
 export const ShopifyConnectionResult = z.object({
   apiKey: z.string(),
   domain: z.string(),
@@ -25,6 +47,7 @@ export const OrganisationResult = z.object({
   plan: z.string().optional().nullable().describe("shopify plan"),
   website: z.string().optional().nullable().describe("website URL"),
   createdAt: z.date().nullable().optional(),
+  settings: settingsResult,
   shopifyConnection: ShopifyConnectionResult,
   shopifyConnectionStatus: ShopifyStatusResult,
   // Billing stuff
@@ -46,6 +69,7 @@ export const OrganisationModelSchema = z.object({
   rating: OrganisationResult.shape.rating,
   plan: OrganisationResult.shape.plan,
   website: OrganisationResult.shape.website,
+  settings: OrganisationResult.shape.settings,
   shopifyConnection: OrganisationResult.shape.shopifyConnection,
   shopifyConnectionStatus: OrganisationResult.shape.shopifyConnectionStatus,
   createdAt: OrganisationResult.shape.createdAt,
@@ -71,6 +95,7 @@ export const OrganisationModel = {
       rating: entity.rating || null,
       plan: entity.plan || null,
       website: entity.website || null,
+      settings: entity.settings || null,
       createdAt: new Date(entity.createdAt || new Date()),
       shopifyConnection: includeCredentials ? (entity.shopifyConnection || null) : null,
       shopifyConnectionStatus: entity.shopifyConnectionStatus || "INACTIVE",
