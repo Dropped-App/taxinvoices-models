@@ -20,6 +20,7 @@ export const settingsResult = z.object({
   province: z.string().optional().nullable(),
   zip: z.string().optional().nullable(),
   country: z.string().optional().nullable(),
+  logo: z.string().optional().nullable(),
   templateType: templateTypes,
 }).optional().nullable();
 
