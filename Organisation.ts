@@ -5,6 +5,7 @@ export const templateTypes = z.union([
   z.literal("NZ-GST"),
   z.literal("AU-GST"),
   z.literal("AU-GST2"),
+	z.literal("ARAMEX"),
 ]).optional().nullable();
 
 export const settingsResult = z.object({
