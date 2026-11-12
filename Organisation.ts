@@ -77,6 +77,8 @@ export const templateTypes = z
   .union([
     z.literal("NZ-GST"),
     z.literal("AU-GST"),
+    z.literal("NZ-GST-DETAILED"),
+    z.literal("AU-GST-DETAILED"),
     z.literal("AU-GST2"),
     z.literal("ARAMEX"),
     z.literal("CUSTOM"),
