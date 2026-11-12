@@ -1,6 +1,27 @@
 import { ObjectId } from "bson";
 import { z } from "zod";
 
+export const customInvoiceHtmlMaxLength = 100_000;
+export const customInvoiceHtmlAggregateMaxLength = 500_000;
+export const customInvoiceAllowedExtraTags = [
+  "style",
+  "table",
+  "thead",
+  "tbody",
+  "tfoot",
+  "tr",
+  "th",
+  "td",
+] as const;
+export const customInvoiceAllowedAttributes = {
+  "*": ["class", "style", "title"],
+  a: ["href", "target", "rel"],
+  img: ["src", "alt", "width", "height"],
+  td: ["colspan", "rowspan"],
+  th: ["colspan", "rowspan", "scope"],
+};
+export const customInvoiceAllowedSchemes = ["https", "data", "mailto"];
+
 export const templateTypes = z
   .union([
     z.literal("NZ-GST"),
@@ -29,7 +50,7 @@ export const settingsResult = z
     country: z.string().optional().nullable(),
     logo: z.string().optional().nullable(),
     templateType: templateTypes,
-    customHtml: z.string().max(100_000).optional().nullable(),
+    customHtml: z.string().max(customInvoiceHtmlMaxLength).optional().nullable(),
   })
   .optional()
   .nullable();
