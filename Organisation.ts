@@ -2,7 +2,13 @@ import { ObjectId } from "bson";
 import { z } from "zod";
 
 export const templateTypes = z
-  .union([z.literal("NZ-GST"), z.literal("AU-GST"), z.literal("AU-GST2"), z.literal("ARAMEX")])
+  .union([
+    z.literal("NZ-GST"),
+    z.literal("AU-GST"),
+    z.literal("AU-GST2"),
+    z.literal("ARAMEX"),
+    z.literal("CUSTOM"),
+  ])
   .optional()
   .nullable();
 
@@ -23,11 +29,22 @@ export const settingsResult = z
     country: z.string().optional().nullable(),
     logo: z.string().optional().nullable(),
     templateType: templateTypes,
+    customHtml: z.string().max(100_000).optional().nullable(),
   })
   .optional()
   .nullable();
 
 export type Settings = z.infer<typeof settingsResult>;
+
+export const invoiceTemplateResult = z.object({
+  id: z.string().min(1).max(80),
+  name: z.string().min(1).max(80),
+  settings: settingsResult.unwrap().unwrap(),
+  createdAt: z.date().optional().nullable(),
+  updatedAt: z.date().optional().nullable(),
+});
+
+export type InvoiceTemplate = z.infer<typeof invoiceTemplateResult>;
 
 export const ShopifyConnectionResult = z
   .object({
@@ -78,6 +95,7 @@ export const OrganisationResult = z.object({
   settingsLastSynced: z.date().nullable().optional(),
   uninstalledAt: z.date().nullable().optional(),
   settings: settingsResult,
+  templates: z.array(invoiceTemplateResult).max(25).optional().nullable(),
   shopifyConnection: ShopifyConnectionResult,
   shopifyConnectionStatus: ShopifyStatusResult,
   // Billing stuff
@@ -101,6 +119,7 @@ export const OrganisationModelSchema = z.object({
   plan: OrganisationResult.shape.plan,
   website: OrganisationResult.shape.website,
   settings: OrganisationResult.shape.settings,
+  templates: OrganisationResult.shape.templates,
   shopifyConnection: OrganisationResult.shape.shopifyConnection,
   shopifyConnectionStatus: OrganisationResult.shape.shopifyConnectionStatus,
   createdAt: OrganisationResult.shape.createdAt,
@@ -133,6 +152,7 @@ export const OrganisationModel = {
       plan: entity.plan || null,
       website: entity.website || null,
       settings: entity.settings || null,
+      templates: entity.templates || null,
       createdAt: new Date(entity.createdAt || new Date()),
       settingsLastSynced: entity.settingsLastSynced ? new Date(entity.settingsLastSynced) : null,
       uninstalledAt: entity.uninstalledAt ? new Date(entity.uninstalledAt) : null,
