@@ -20,7 +20,58 @@ export const customInvoiceAllowedAttributes = {
   td: ["colspan", "rowspan"],
   th: ["colspan", "rowspan", "scope"],
 };
-export const customInvoiceAllowedSchemes = ["https", "data", "mailto"];
+export const customInvoiceAllowedSchemes = ["https", "mailto"];
+export const customInvoiceAllowedSchemesByTag = {
+  a: ["https", "mailto"],
+  img: ["data"],
+};
+export const customInvoiceAllowedValuePaths = [
+  "business.name",
+  "business.gstNumber",
+  "business.email",
+  "business.phone",
+  "business.website",
+  "business.logo",
+  "business.address",
+  "order.name",
+  "order.poNumber",
+  "order.date",
+  "order.currency",
+  "order.subtotal",
+  "order.discount",
+  "order.shipping",
+  "order.tax",
+  "order.total",
+  "order.amountDue",
+  "customer.name",
+  "customer.email",
+  "customer.phone",
+  "customer.address",
+  "paymentInstructions",
+  "note",
+  "description",
+  "quantity",
+  "unitPrice",
+  "total",
+] as const;
+
+export function assertAllowedInvoiceHandlebars(value: string) {
+  const values = new Set<string>(customInvoiceAllowedValuePaths);
+  const conditions = new Set([...values, "items", "business", "order", "customer"]);
+  const pattern = /{{([\s\S]*?)}}/g;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(value))) {
+    const token = (match[1] || "").trim();
+    const allowed =
+      token === "else" ||
+      token === "/if" ||
+      token === "/each" ||
+      token === "#each items" ||
+      (token.startsWith("#if ") && conditions.has(token.slice(4).trim())) ||
+      values.has(token.replace(/^this\./, ""));
+    if (!allowed) throw new Error(`Handlebars expression is not allowed: {{${token}}}`);
+  }
+}
 
 export const templateTypes = z
   .union([
